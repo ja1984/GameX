@@ -1,4 +1,4 @@
-FROM microsoft/aspnet:coreclr-1.0.0-beta5-11624
+FROM microsoft/aspnet
 
 COPY . /app
 WORKDIR /app
