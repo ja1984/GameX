@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="red">#990000</color>
+    <color name="red_light">#88990000</color>
+    <color name="window_background">#454344</color>
+</resources>
