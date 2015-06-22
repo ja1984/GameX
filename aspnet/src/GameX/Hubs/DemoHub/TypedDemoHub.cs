@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR;
 
-namespace Twee.Api.Hubs
+namespace SignalRSample.Web.Hubs.DemoHub
 {
-    public class TypedTestHub : Hub<IClient>
+    public class TypedDemoHub : Hub<IClient>
     {
         private static int _invokeCount = 0;
 
