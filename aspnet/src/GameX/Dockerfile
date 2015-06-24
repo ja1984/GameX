@@ -28,7 +28,7 @@ ENV PATH $PATH:$DNX_USER_HOME/runtimes/default/bin
 
 COPY . /app
 WORKDIR /app
-RUN ["dnu", "restore"]
+RUN ["dnu", "restore", "-s", "https://www.myget.org/F/aspnetvnext/api/v2" , "-f", "https://nuget.org/api/v2"]
 
 EXPOSE 5005
 ENTRYPOINT ["dnx", ".", "kestrel"]
