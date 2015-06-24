@@ -36,7 +36,7 @@ public class MainActivity extends ActionBarActivity {
 
         HubConnection connection = new HubConnection("");
 
-        HubProxy hub = connection.createHubProxy("game");
+        final HubProxy hub = connection.createHubProxy("game");
 
         calculatePercent(9300000,9201000);
 
@@ -54,6 +54,9 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 progress.setProgress((progress.getProgress() + 1));
+
+                hub.invoke("kill");
+
             }
         });
 
