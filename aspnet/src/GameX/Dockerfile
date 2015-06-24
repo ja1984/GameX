@@ -33,7 +33,7 @@ RUN curl -o ~/.config/NuGet/NuGet.Config -sSL https://gist.githubusercontent.com
 
 COPY . /app
 WORKDIR /app
-RUN ["dnu", "restore" , "-f"]
+RUN ["dnu", "restore" , "-s","https://www.myget.org/F/aspnetvnext/"]
 
 EXPOSE 5005
 ENTRYPOINT ["dnx", ".", "kestrel"]
