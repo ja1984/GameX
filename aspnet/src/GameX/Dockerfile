@@ -26,8 +26,8 @@ RUN LIBUV_VERSION=1.4.2 \
 	&& ldconfig
 
 ENV PATH $PATH:$DNX_USER_HOME/runtimes/default/bin
-RUN apt-get update && apt-get install -y certmgr && certmgr -ssl -m https://www.myget.org && certmgr -ssl -m https://nugetgallery.blob.core.windows.net && certmgr -ssl -m https://nuget.org
-RUN mozroots --import --machine --sync
+RUN yes | certmgr -ssl -m https://nugetgallery.blob.core.windows.net  https://nuget.org https://www.myget.org https://go.microsoft.com
+RUN mozroots --import --sync --quiet
 
 RUN mkdir -p ~/.config/NuGet/
 RUN curl -o ~/.config/NuGet/NuGet.Config -sSL https://gist.githubusercontent.com/Tazer/1ad0e439846ee26ef9a5/raw/12bc6b02b74af55154e456ec232ef3c01ec960e6/Nuget.config
