@@ -26,7 +26,9 @@ import microsoft.aspnet.signalr.client.http.Request;
 import microsoft.aspnet.signalr.client.http.android.AndroidPlatformComponent;
 import microsoft.aspnet.signalr.client.hubs.HubConnection;
 import microsoft.aspnet.signalr.client.hubs.HubProxy;
+import microsoft.aspnet.signalr.client.hubs.SubscriptionHandler;
 import microsoft.aspnet.signalr.client.transport.ServerSentEventsTransport;
+import microsoft.aspnet.signalr.client.transport.WebsocketTransport;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -42,40 +44,17 @@ public class MainActivity extends ActionBarActivity {
         ButterKnife.inject(this);
         Platform.loadPlatformComponent(new AndroidPlatformComponent());
 
+        HubConnection connection = new HubConnection("");
 
-        String host = "http://192.168.20.170:41498/raw-connection";
-        Connection connection = new Connection(host);
+        HubProxy hub = connection.createHubProxy("game");
 
-
-        try {
-            connection.start(new ServerSentEventsTransport(connection.getLogger(), new HttpConnection() {
-                @Override
-                public HttpConnectionFuture execute(Request request, HttpConnectionFuture.ResponseCallback responseCallback) {
-                    return new HttpConnectionFuture();
-                }
-            })).get();
-        } catch (InterruptedException e) {
-            Log.d("Error",e.getMessage());
-            // Handle ...
-        } catch (ExecutionException e) {
-            Log.e("Error",e.getMessage(),e);
-            // Handle ...
-        }
-
-
-        connection.connected(new Runnable() {
+        hub.on("updateCountry",new SubscriptionHandler() {
             @Override
             public void run() {
-                Log.d("Connectioned","Yes");
+                Log.i("Test Message", "broadcastMessage received...");
             }
-        });
+        }););
 
-        connection.closed(new Runnable() {
-            @Override
-            public void run() {
-                Log.d("Connectioned","Disconnected");
-            }
-        });
 
 
         button.setOnClickListener(new View.OnClickListener() {
@@ -87,10 +66,14 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
-    public void UpdateStatus( String status )
-    {
-        Log.d("Updatestats","" + status);
-    }
+
+
+
+
+
+
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
