@@ -1,8 +1,7 @@
 package se.codejunkies.thekilleveryoneproject;
 
-import android.graphics.Color;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -10,25 +9,16 @@ import android.view.View;
 import android.widget.Button;
 
 import com.akexorcist.roundcornerprogressbar.IconRoundCornerProgressBar;
-import com.dlazaro66.wheelindicatorview.WheelIndicatorItem;
-import com.dlazaro66.wheelindicatorview.WheelIndicatorView;
-
-import java.util.concurrent.ExecutionException;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import microsoft.aspnet.signalr.client.Connection;
 import microsoft.aspnet.signalr.client.Platform;
-import microsoft.aspnet.signalr.client.SignalRFuture;
-import microsoft.aspnet.signalr.client.http.HttpConnection;
-import microsoft.aspnet.signalr.client.http.HttpConnectionFuture;
-import microsoft.aspnet.signalr.client.http.Request;
 import microsoft.aspnet.signalr.client.http.android.AndroidPlatformComponent;
 import microsoft.aspnet.signalr.client.hubs.HubConnection;
 import microsoft.aspnet.signalr.client.hubs.HubProxy;
 import microsoft.aspnet.signalr.client.hubs.SubscriptionHandler;
-import microsoft.aspnet.signalr.client.transport.ServerSentEventsTransport;
-import microsoft.aspnet.signalr.client.transport.WebsocketTransport;
+import microsoft.aspnet.signalr.client.hubs.SubscriptionHandler1;
+import se.codejunkies.thekilleveryoneproject.Models.Country;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -48,12 +38,15 @@ public class MainActivity extends ActionBarActivity {
 
         HubProxy hub = connection.createHubProxy("game");
 
-        hub.on("updateCountry",new SubscriptionHandler() {
+        calculatePercent(9300000,9201000);
+
+        hub.on("updateCountry",new SubscriptionHandler1<Country>() {
             @Override
-            public void run() {
-                Log.i("Test Message", "broadcastMessage received...");
+            public void run(Country country) {
+
             }
-        }););
+
+        },Country.class);
 
 
 
@@ -73,6 +66,14 @@ public class MainActivity extends ActionBarActivity {
 
 
 
+
+
+
+    private void calculatePercent(float oldValue, float newValue){
+        float diff = oldValue - newValue;
+        Log.d("Calc","" + (newValue / oldValue) * 100);
+        Log.d("Calc","" + Math.round((newValue / oldValue) * 100));
+    }
 
 
     @Override
