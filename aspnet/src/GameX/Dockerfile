@@ -3,6 +3,7 @@ FROM mono:latest
 
 ENV DNX_VERSION 1.0.0-beta6
 ENV DNX_USER_HOME /opt/dnx
+ENV DNX_FEED https://www.myget.org/F/aspnetvnext/
 
 RUN apt-get -qq update && apt-get -qqy install unzip
 
