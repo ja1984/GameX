@@ -27,14 +27,9 @@ RUN LIBUV_VERSION=1.4.2 \
 
 ENV PATH $PATH:$DNX_USER_HOME/runtimes/default/bin
 
-# Update NuGet feeds
-RUN mkdir -p ~/.config/NuGet/
-RUN curl -o ~/.config/NuGet/NuGet.Config -sSL https://gist.githubusercontent.com/Tazer/1ad0e439846ee26ef9a5/raw/12bc6b02b74af55154e456ec232ef3c01ec960e6/Nuget.config
-
-
 COPY . /app
 WORKDIR /app
-RUN dnu restore -s https://www.myget.org/F/aspnetvnext/
+RUN ["dnu", "restore"]
 
 EXPOSE 5005
 ENTRYPOINT ["dnx", ".", "kestrel"]
