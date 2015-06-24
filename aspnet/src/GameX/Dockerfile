@@ -26,7 +26,7 @@ RUN LIBUV_VERSION=1.4.2 \
 	&& ldconfig
 
 ENV PATH $PATH:$DNX_USER_HOME/runtimes/default/bin
-RUN yes | certmgr -ssl -m https://nugetgallery.blob.core.windows.net  https://nuget.org https://www.myget.org https://go.microsoft.com
+RUN yes | certmgr -ssl -m https://nugetgallery.blob.core.windows.net  https://nuget.org https://www.myget.org/F/aspnetvnext/ https://go.microsoft.com
 RUN mozroots --import --sync --quiet
 
 RUN mkdir -p ~/.config/NuGet/
