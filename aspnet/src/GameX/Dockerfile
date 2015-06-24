@@ -1,13 +1,13 @@
 
 FROM mono:latest
 
-ENV DNX_VERSION 1.0.0-beta6-*
+ENV DNX_VERSION 1.0.0-beta6-12114
 ENV DNX_USER_HOME /opt/dnx
 ENV DNX_FEED https://www.myget.org/F/aspnetvnext/api/v2
 
 RUN apt-get -qq update && apt-get -qqy install unzip
 
-RUN curl -sSL https://raw.githubusercontent.com/aspnet/Home/dev/dnvminstall.sh | DNX_USER_HOME=$DNX_USER_HOME DNX_BRANCH=v1.0.0-beta6 sh
+RUN curl -sSL https://raw.githubusercontent.com/aspnet/Home/dev/dnvminstall.sh | DNX_USER_HOME=$DNX_USER_HOME DNX_BRANCH=v$DNX_VERSION sh
 RUN bash -c "source $DNX_USER_HOME/dnvm/dnvm.sh \
 	&& dnvm install $DNX_VERSION -a default \
 	&& dnvm alias default | xargs -i ln -s $DNX_USER_HOME/runtimes/{} $DNX_USER_HOME/runtimes/default"
@@ -26,6 +26,9 @@ RUN LIBUV_VERSION=1.4.2 \
 	&& ldconfig
 
 ENV PATH $PATH:$DNX_USER_HOME/runtimes/default/bin
+
+RUN mkdir -p ~/.config/NuGet/
+RUN curl -o ~/.config/NuGet/NuGet.Config -sSL https://gist.githubusercontent.com/Tazer/1ad0e439846ee26ef9a5/raw/12bc6b02b74af55154e456ec232ef3c01ec960e6/Nuget.config
 
 COPY . /app
 WORKDIR /app
