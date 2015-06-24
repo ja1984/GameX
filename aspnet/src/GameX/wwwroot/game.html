@@ -1,0 +1,72 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>ASP.NET SignalR</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="/Content/bootstrap.css" rel="stylesheet" />
+    <link href="/Content/bootstrap-responsive.css" rel="stylesheet" />
+    <link href="/Content/site.css" rel="stylesheet" />
+    <style>
+        body {
+            padding-top: 80px;
+            padding-bottom: 40px;
+            padding-left: 10px;
+        }
+    </style>
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="navbar-inner">
+            <div class="container">
+                <a class="brand" href="/">GameX</a>
+                <div class="nav-collapse collapse">
+                    <ul class="nav">
+                        <li class="active"><a href="/game.html">Game</a></li>
+
+                    </ul>
+                </div>
+                <!--/.nav-collapse -->
+            </div>
+        </div>
+    </div>
+
+    <ul class="breadcrumb">
+        <li><a href="/">GameX</a> <span class="divider">/</span></li>
+        <li class="active">The Game</li>
+    </ul>
+
+    <div class="page-header">
+        <h2>Lets see </h2>
+        <p>Game on</p>
+    </div>
+
+
+
+
+    <h5 data-bind="html:name"> </h5>
+    <div data-bind="html:population">
+
+    </div>
+    <div data-bind="html:currentPopulation">
+
+    </div>
+    <button class="btn btn-large btn-danger" data-bind="click:kill">Kill</button>
+
+    <script src="/Scripts/jquery-1.8.2.js"></script>
+    <script src="/Scripts/bootstrap.js"></script>
+    <script src="/Scripts/signalr.samples.js"></script>
+    <script src="/Scripts/json2.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.3.0/knockout-debug.js"></script>
+
+    <script src="http://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.0.3.js"></script>
+    <script src="/Scripts/jquery.cookie.js"></script>
+    <script src="/signalr/js"></script>
+    <script src="/scripts/Game.js"></script>
+</body>
+</html>

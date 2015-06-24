@@ -39,7 +39,7 @@ namespace GameX.Hubs.GameHub
 
         public void Kill()
         {
-            _world.Countries[1].Population--;
+            _world.Countries[1].CurrentPopulation--;
             Clients.All.updateCountry(_world.Countries[1]);
         }
 
@@ -53,8 +53,8 @@ namespace GameX.Hubs.GameHub
             {
                 Countries = new List<Country>
                 {
-                    new Country() {Name = "Sweden", Population = 9300000},
-                    new Country() {Name = "Small Country", Population = 100}
+                    new Country() {Name = "Sweden", Population = 9300000, CurrentPopulation = 9300000},
+                    new Country() {Name = "Small Country", Population = 100 , CurrentPopulation = 100}
                 };
             }
         }
@@ -67,5 +67,6 @@ namespace GameX.Hubs.GameHub
     {
         public string Name { get; set; }
         public long Population { get; set; }
+        public long CurrentPopulation { get; set; }
     }
 }
