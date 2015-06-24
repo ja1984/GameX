@@ -26,7 +26,8 @@ RUN LIBUV_VERSION=1.4.2 \
 
 ENV PATH $PATH:$DNX_USER_HOME/runtimes/default/bin
 
-COPY NuGet.config /.config/NuGet/NuGet.config
+RUN mkdir -p ~/.config/NuGet/
+RUN curl -o ~/.config/NuGet/NuGet.Config -sSL https://gist.githubusercontent.com/AlexZeitler/a3412a4d4eeee60f8ce8/raw/45b0b5312845099cdf5da560829e75949d44d65f/NuGet.config
 COPY . /app
 WORKDIR /app
 RUN ["dnu", "restore"]
