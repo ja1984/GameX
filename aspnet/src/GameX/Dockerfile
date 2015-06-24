@@ -8,7 +8,7 @@ RUN apt-get -qq update && apt-get -qqy install unzip
 
 RUN curl -sSL https://raw.githubusercontent.com/aspnet/Home/dev/dnvminstall.sh | DNX_USER_HOME=$DNX_USER_HOME DNX_BRANCH=v$DNX_VERSION sh
 RUN bash -c "source $DNX_USER_HOME/dnvm/dnvm.sh \
-	&& dnvm install -a default \
+	&& dnvm install $DNX_VERSION -a default \
 	&& dnvm alias default | xargs -i ln -s $DNX_USER_HOME/runtimes/{} $DNX_USER_HOME/runtimes/default"
 
 # Install libuv for Kestrel from source code (binary is not in wheezy and one in jessie is still too old)
@@ -28,12 +28,12 @@ ENV PATH $PATH:$DNX_USER_HOME/runtimes/default/bin
 
 # Update NuGet feeds
 RUN mkdir -p ~/.config/NuGet/
-RUN curl -o ~/.config/NuGet/NuGet.Config -sSL https://gist.githubusercontent.com/AlexZeitler/a3412a4d4eeee60f8ce8/raw/45b0b5312845099cdf5da560829e75949d44d65f/NuGet.config
+RUN curl -o ~/.config/NuGet/NuGet.Config -sSL https://gist.githubusercontent.com/Tazer/1ad0e439846ee26ef9a5/raw/12bc6b02b74af55154e456ec232ef3c01ec960e6/Nuget.config
 
 
 COPY . /app
 WORKDIR /app
-RUN ["dnu", "restore"]
+RUN ["dnu", "restore" , "-f"]
 
 EXPOSE 5005
 ENTRYPOINT ["dnx", ".", "kestrel"]
