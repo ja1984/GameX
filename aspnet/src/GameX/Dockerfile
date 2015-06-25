@@ -29,7 +29,7 @@ ENV PATH $PATH:$DNX_USER_HOME/runtimes/default/bin
 
 
 RUN mkdir -p ~/.config/NuGet/
-RUN curl -o ~/.config/NuGet/NuGet.Config -sSL https://gist.githubusercontent.com/Tazer/1ad0e439846ee26ef9a5/raw/12bc6b02b74af55154e456ec232ef3c01ec960e6/Nuget.config
+RUN curl -o ~/.config/NuGet/NuGet.Config -sSL https://gist.githubusercontent.com/Tazer/1ad0e439846ee26ef9a5/raw/901bd4ef59626ccab63622fa5ff7a711f24a22e9/Nuget.config
 
 COPY . /app
 WORKDIR /app
