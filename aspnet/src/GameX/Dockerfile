@@ -1,7 +1,7 @@
 
 FROM mono:latest
 
-ENV DNX_VERSION 1.0.0-beta6-11923
+ENV DNX_VERSION 1.0.0-beta6-12114
 ENV DNX_USER_HOME /opt/dnx
 ENV DNX_FEED https://www.myget.org/F/aspnetvnext/api/v2
 
@@ -34,6 +34,7 @@ RUN curl -o ~/.config/NuGet/NuGet.Config -sSL https://gist.githubusercontent.com
 
 COPY . /app
 WORKDIR /app
+RUN ping www.myget.org
 RUN dnu restore -s https://www.myget.org/F/aspnetvnext/
 
 EXPOSE 5005
