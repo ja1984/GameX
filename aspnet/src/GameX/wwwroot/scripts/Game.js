@@ -41,7 +41,7 @@
         .done(function () {
             vm.init();
         }).fail(function () {
-            Console.log("Could not connect!");
+            console.log("Could not connect!");
         });
     var timeout = null;
     var interval = 10000;
