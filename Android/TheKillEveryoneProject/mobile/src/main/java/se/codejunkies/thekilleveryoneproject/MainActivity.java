@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import com.akexorcist.roundcornerprogressbar.IconRoundCornerProgressBar;
 
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 
 import butterknife.ButterKnife;
@@ -28,8 +30,14 @@ public class MainActivity extends ActionBarActivity {
 
 
     @InjectView(R.id.button) Button button;
+
     @InjectView(R.id.country)    TextView country;
+    @InjectView(R.id.kpm)    TextView killsPerMinute;
     @InjectView(R.id.progress)    IconRoundCornerProgressBar progress;
+    @InjectView(R.id.countryProgress) IconRoundCornerProgressBar countryProgress;
+    int kpm = 0;
+
+    private Timer _timer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,26 +46,25 @@ public class MainActivity extends ActionBarActivity {
         ButterKnife.inject(this);
         Platform.loadPlatformComponent(new AndroidPlatformComponent());
 
+        _timer = new Timer();
+        _timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                Log.d("Kills per minute","Your kpm is: " + kpm);
+                kpm = 0;
+            }
+        },0,60*1000);
+
         HubConnection connection = new HubConnection("http://192.168.20.170:41498/signalr");
         final HubProxy hub = connection.createHubProxy("game");
-
-        try {
-            connection.start(new MyWebsocketTransport(connection.getLogger())).get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-
-        //calculatePercent(9300000, 9201000);
 
         hub.on("updateCountry",new SubscriptionHandler1<Country>() {
             @Override
             public void run(Country _country) {
                 Log.d("Kill","Got death update");
                 country.setText(_country.Name);
-                progress.setMax(_country.Population);
-                progress.setProgress(_country.CurrentPopulation);
+                Log.d("Death progress","Countyr: " + _country.Name + " Current Pop:" + _country.CurrentPopulation + " Pop: " + _country.Population);
+                setCountryProgress(_country.Population, _country.CurrentPopulation);
             }
 
         },Country.class);
@@ -67,49 +74,28 @@ public class MainActivity extends ActionBarActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                progress.setProgress((progress.getProgress() + 1));
+                kpm++;
                 hub.invoke("kill");
             }
         });
 
-    }
 
-
-
-
-
-
-
-
-
-
-
-    private void calculatePercent(float oldValue, float newValue){
-        float diff = oldValue - newValue;
-        Log.d("Calc","" + (newValue / oldValue) * 100);
-        Log.d("Calc","" + Math.round((newValue / oldValue) * 100));
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        try {
+            connection.start(new MyWebsocketTransport(connection.getLogger())).get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
         }
 
-        return super.onOptionsItemSelected(item);
+
+
     }
+
+    private void setCountryProgress(float startPopulation, float currentPopulation){
+        Log.d("Update","setCountryProgress");
+        Log.d("Death progress","" + Math.round((currentPopulation / startPopulation) * 100));
+        countryProgress.setProgress(Math.round((currentPopulation / startPopulation) * 100));
+    }
+
 }

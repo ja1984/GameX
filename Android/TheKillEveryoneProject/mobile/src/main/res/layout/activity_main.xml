@@ -35,7 +35,7 @@
             app:rcBackgroundColor="#3c3a3b"
             app:rcHeaderColor="@color/red_light"
             app:rcProgressColor="@color/red"
-            app:rcProgress="50"
+            app:rcProgress="100"
             app:rcMax="100" />
         <View android:layout_width="match_parent" android:layout_height="15dp" />
         <TextView
@@ -46,7 +46,7 @@
             android:textColor="#ffffff"
             />
         <com.akexorcist.roundcornerprogressbar.IconRoundCornerProgressBar
-            android:id="@+id/progress_country"
+            android:id="@+id/countryProgress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:rcIconPadding="5dp"
@@ -57,11 +57,16 @@
             app:rcBackgroundColor="#3c3a3b"
             app:rcHeaderColor="@color/red_light"
             app:rcProgressColor="@color/red"
-            app:rcProgress="50"
+            app:rcProgress="100"
             app:rcMax="100" />
     </LinearLayout>
 
-
+<TextView
+    android:id="@+id/kpm"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="0"
+    />
     <Button
         android:id="@+id/button"
         android:layout_width="match_parent"
