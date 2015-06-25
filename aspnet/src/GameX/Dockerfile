@@ -34,7 +34,6 @@ RUN curl -o ~/.config/NuGet/NuGet.Config -sSL https://gist.githubusercontent.com
 
 COPY . /app
 WORKDIR /app
-RUN ping www.myget.org
 RUN dnu restore -s https://www.myget.org/F/aspnetvnext/
 
 EXPOSE 5005
