@@ -7,8 +7,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.akexorcist.roundcornerprogressbar.IconRoundCornerProgressBar;
+
+import java.util.concurrent.ExecutionException;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -25,6 +28,7 @@ public class MainActivity extends ActionBarActivity {
 
 
     @InjectView(R.id.button) Button button;
+    @InjectView(R.id.country)    TextView country;
     @InjectView(R.id.progress)    IconRoundCornerProgressBar progress;
 
     @Override
@@ -34,16 +38,26 @@ public class MainActivity extends ActionBarActivity {
         ButterKnife.inject(this);
         Platform.loadPlatformComponent(new AndroidPlatformComponent());
 
-        HubConnection connection = new HubConnection("");
-
+        HubConnection connection = new HubConnection("http://192.168.20.170:41498/signalr");
         final HubProxy hub = connection.createHubProxy("game");
 
-        calculatePercent(9300000,9201000);
+        try {
+            connection.start(new MyWebsocketTransport(connection.getLogger())).get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        //calculatePercent(9300000, 9201000);
 
         hub.on("updateCountry",new SubscriptionHandler1<Country>() {
             @Override
-            public void run(Country country) {
-
+            public void run(Country _country) {
+                Log.d("Kill","Got death update");
+                country.setText(_country.Name);
+                progress.setMax(_country.Population);
+                progress.setProgress(_country.CurrentPopulation);
             }
 
         },Country.class);
@@ -54,9 +68,7 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 progress.setProgress((progress.getProgress() + 1));
-
                 hub.invoke("kill");
-
             }
         });
 
