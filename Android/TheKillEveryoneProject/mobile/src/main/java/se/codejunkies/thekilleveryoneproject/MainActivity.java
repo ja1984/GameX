@@ -1,8 +1,7 @@
 package se.codejunkies.thekilleveryoneproject;
 
-import android.graphics.Color;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -10,23 +9,16 @@ import android.view.View;
 import android.widget.Button;
 
 import com.akexorcist.roundcornerprogressbar.IconRoundCornerProgressBar;
-import com.dlazaro66.wheelindicatorview.WheelIndicatorItem;
-import com.dlazaro66.wheelindicatorview.WheelIndicatorView;
-
-import java.util.concurrent.ExecutionException;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import microsoft.aspnet.signalr.client.Connection;
 import microsoft.aspnet.signalr.client.Platform;
-import microsoft.aspnet.signalr.client.SignalRFuture;
-import microsoft.aspnet.signalr.client.http.HttpConnection;
-import microsoft.aspnet.signalr.client.http.HttpConnectionFuture;
-import microsoft.aspnet.signalr.client.http.Request;
 import microsoft.aspnet.signalr.client.http.android.AndroidPlatformComponent;
 import microsoft.aspnet.signalr.client.hubs.HubConnection;
 import microsoft.aspnet.signalr.client.hubs.HubProxy;
-import microsoft.aspnet.signalr.client.transport.ServerSentEventsTransport;
+import microsoft.aspnet.signalr.client.hubs.SubscriptionHandler;
+import microsoft.aspnet.signalr.client.hubs.SubscriptionHandler1;
+import se.codejunkies.thekilleveryoneproject.Models.Country;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -42,55 +34,50 @@ public class MainActivity extends ActionBarActivity {
         ButterKnife.inject(this);
         Platform.loadPlatformComponent(new AndroidPlatformComponent());
 
+        HubConnection connection = new HubConnection("");
 
-        String host = "http://192.168.20.170:41498/raw-connection";
-        Connection connection = new Connection(host);
+        final HubProxy hub = connection.createHubProxy("game");
 
+        calculatePercent(9300000,9201000);
 
-        try {
-            connection.start(new ServerSentEventsTransport(connection.getLogger(), new HttpConnection() {
-                @Override
-                public HttpConnectionFuture execute(Request request, HttpConnectionFuture.ResponseCallback responseCallback) {
-                    return new HttpConnectionFuture();
-                }
-            })).get();
-        } catch (InterruptedException e) {
-            Log.d("Error",e.getMessage());
-            // Handle ...
-        } catch (ExecutionException e) {
-            Log.e("Error",e.getMessage(),e);
-            // Handle ...
-        }
-
-
-        connection.connected(new Runnable() {
+        hub.on("updateCountry",new SubscriptionHandler1<Country>() {
             @Override
-            public void run() {
-                Log.d("Connectioned","Yes");
-            }
-        });
+            public void run(Country country) {
 
-        connection.closed(new Runnable() {
-            @Override
-            public void run() {
-                Log.d("Connectioned","Disconnected");
             }
-        });
+
+        },Country.class);
+
 
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 progress.setProgress((progress.getProgress() + 1));
+
+                hub.invoke("kill");
+
             }
         });
 
     }
 
-    public void UpdateStatus( String status )
-    {
-        Log.d("Updatestats","" + status);
+
+
+
+
+
+
+
+
+
+
+    private void calculatePercent(float oldValue, float newValue){
+        float diff = oldValue - newValue;
+        Log.d("Calc","" + (newValue / oldValue) * 100);
+        Log.d("Calc","" + Math.round((newValue / oldValue) * 100));
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
