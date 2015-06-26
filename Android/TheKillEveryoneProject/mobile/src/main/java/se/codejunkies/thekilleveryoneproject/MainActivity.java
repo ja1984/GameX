@@ -10,20 +10,19 @@ import android.widget.TextView;
 
 import com.akexorcist.roundcornerprogressbar.IconRoundCornerProgressBar;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ExecutionException;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import lecho.lib.hellocharts.gesture.ContainerScrollType;
+import lecho.lib.hellocharts.model.Column;
 import lecho.lib.hellocharts.model.ColumnChartData;
-import lecho.lib.hellocharts.model.Line;
-import lecho.lib.hellocharts.model.LineChartData;
-import lecho.lib.hellocharts.model.PointValue;
+import lecho.lib.hellocharts.model.SubcolumnValue;
 import lecho.lib.hellocharts.view.ColumnChartView;
-import lecho.lib.hellocharts.view.LineChartView;
 import microsoft.aspnet.signalr.client.Platform;
 import microsoft.aspnet.signalr.client.http.android.AndroidPlatformComponent;
 import microsoft.aspnet.signalr.client.hubs.HubConnection;
@@ -40,11 +39,16 @@ public class MainActivity extends ActionBarActivity {
     @InjectView(R.id.country)    TextView country;
     @InjectView(R.id.chart)    ColumnChartView chart;
     @InjectView(R.id.kpm)    TextView killsPerMinute;
+    @InjectView(R.id.last)    TextView lastMinute;
     @InjectView(R.id.progress)    IconRoundCornerProgressBar progress;
     @InjectView(R.id.countryProgress) IconRoundCornerProgressBar countryProgress;
-    int kpm = 0;
+
+    private int _killsPerMinute = 0;
+    private int _killsPerLastMinute = 0;
 
     private Timer _timer;
+    private HubConnection _connection;
+    private HubProxy _hub;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,43 +57,55 @@ public class MainActivity extends ActionBarActivity {
         ButterKnife.inject(this);
         Platform.loadPlatformComponent(new AndroidPlatformComponent());
 
-        List<PointValue> values = new ArrayList<PointValue>();
-        values.add(new PointValue(0, 2));
-        values.add(new PointValue(1, 4));
-        values.add(new PointValue(2, 3));
-        values.add(new PointValue(3, 4));
+        try {
+            _connection.start(new MyWebsocketTransport(_connection.getLogger())).get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
 
-        //In most cased you can call data model methods in builder-pattern-like manner.
-        Line line = new Line(values).setColor(Color.WHITE).setCubic(true);
-        List<Line> lines = new ArrayList<Line>();
-        lines.add(line);
+        int numSubcolumns = 1;
+        int numColumns = 1;
+        // Column can have many subcolumns, here by default I use 1 subcolumn in each of 8 columns.
+        List<Column> columns = new ArrayList<Column>();
+        List<SubcolumnValue> values;
+        for (int i = 0; i < numColumns; ++i) {
+            values = new ArrayList<SubcolumnValue>();
+            for (int j = 0; j < numSubcolumns; ++j) {
+                values.add(new SubcolumnValue(0f, Color.WHITE));
+            }
+            Column column = new Column(values);
+            column.setHasLabels(false);
+            column.setHasLabelsOnlyForSelected(false);
+            columns.add(column);
+        }
+        chart.setInteractive(false);
+        chart.setContainerScrollEnabled(false, ContainerScrollType.HORIZONTAL);
+        chart.setZoomEnabled(false);
+        chart.setColumnChartData(new ColumnChartData(columns));
 
-        ColumnChartData data = new ColumnChartData();
-        data.setColumns(lines);
 
-        chart.setColumnChartData(data);
 
         _timer = new Timer();
         _timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-
-                //lineChart.notifyDataUpdate();
-                //Log.d("Kills per minute", "Your kpm is: " + kpm);
-                kpm = 0;
+                updateChart(_killsPerMinute);
+                _killsPerMinute = 0;
             }
-        },0,60*1000);
+        },0,10*1000);
 
-        HubConnection connection = new HubConnection("http://192.168.20.170:41498/signalr");
-        final HubProxy hub = connection.createHubProxy("game");
+        _connection =  new HubConnection("http://192.168.20.170:41498/signalr");
+        _hub = _connection.createHubProxy("game");
 
-        hub.on("updateCountry",new SubscriptionHandler1<Country>() {
+        _hub.on("updateCountry",new SubscriptionHandler1<Country>() {
             @Override
             public void run(Country _country) {
                 Log.d("Kill","Got death update");
                 country.setText(_country.Name);
                 Log.d("Death progress","Countyr: " + _country.Name + " Current Pop:" + _country.CurrentPopulation + " Pop: " + _country.Population);
-                setCountryProgress(_country.Population, _country.CurrentPopulation);
+                updateProgressbar(_country.Population, _country.CurrentPopulation, countryProgress);
             }
 
         },Country.class);
@@ -99,26 +115,42 @@ public class MainActivity extends ActionBarActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                kpm++;
-                hub.invoke("kill");
+                kill();
             }
         });
 
 
-//        try {
-//            connection.start(new MyWebsocketTransport(connection.getLogger())).get();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        } catch (ExecutionException e) {
-//            e.printStackTrace();
-//        }
+
 
 
 
     }
 
-    private void setCountryProgress(float startPopulation, float currentPopulation){
-        Log.d("Update","setCountryProgress");
+    private void updateChart(float value) {
+        ColumnChartData data = chart.getChartData();
+        List<Column> columns = data.getColumns();
+
+        Column column = columns.get(0);
+
+        List<SubcolumnValue> values = column.getValues() ;
+        if(values.size() == 60){
+            values.remove(0);
+        }
+
+        values.add(new SubcolumnValue(value, Color.WHITE));
+
+        column.setValues(values);
+        data.setColumns(columns);
+        chart.setColumnChartData(data);
+        lastMinute.setText("Last min: " + value);
+    }
+
+    private void kill() {
+        _killsPerMinute++;
+        _hub.invoke("kill");
+    }
+
+    private void updateProgressbar(float startPopulation, float currentPopulation, IconRoundCornerProgressBar countryProgress){
         Log.d("Death progress","" + Math.round((currentPopulation / startPopulation) * 100));
         countryProgress.setProgress(Math.round((currentPopulation / startPopulation) * 100));
     }
