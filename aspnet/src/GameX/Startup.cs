@@ -7,6 +7,7 @@ using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Http;
 using Microsoft.AspNet.SignalR;
 using Microsoft.Framework.DependencyInjection;
+using Microsoft.AspNet.WebSockets.Server;
 
 namespace GameX
 {
@@ -27,6 +28,7 @@ namespace GameX
             app.UseStaticFiles();
             app.UseSignalR<RawConnection>("/raw-connection");
             app.UseSignalR();
+            app.UseWebSockets();
         }
     }
 }

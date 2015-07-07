@@ -7,6 +7,7 @@
     "Microsoft.AspNet.Server.IIS": "1.0.0-beta6-*",
     "Microsoft.AspNet.Server.WebListener": "1.0.0-beta6-*",
     "Microsoft.AspNet.StaticFiles": "1.0.0-beta6-*",
+    "Microsoft.AspNet.WebSockets.Server":  "1.0.0-beta6-*",
     "Kestrel": "1.0.0-beta6-*",
     "Microsoft.AspNet.SignalR.Server": "3.0.0-beta6-*",
     "Newtonsoft.Json": "7.0.1"
